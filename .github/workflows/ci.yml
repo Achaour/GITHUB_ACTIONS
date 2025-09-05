@@ -23,3 +23,19 @@ jobs:
     - name: Run tests
       run: |
         pytest
+  docker:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: login to DockerHub
+      runs: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+    
+    - name: Build DockerHub image
+      run: docker build -t ${{secrets.DOCKERHUB_USERNAME}}/flask-gh-actions-demo:latest .
+    
+    - name: Push DockerHub image
+      run: docker push ${{secrets.DOCKERHUB_USERNAME}}/flask-gh-actions-demo:latest
